@@ -1,0 +1,27 @@
+{
+    "name": "ASP.NET Core Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/universal:2-linux", // Basis-Image
+    "features": {
+      "ghcr.io/devcontainers/features/dotnet:1": {
+        "version": "8.0" // .NET 8.0 SDK installieren
+      }
+    },
+    "postCreateCommand": "dotnet restore && dotnet tool install -g Microsoft.Web.LibraryManager.Cli",
+    "postStartCommand": "git pull origin main --quiet && gh codespace ports visibility 5027:public -c $CODESPACE_NAME && dotnet run --project ./DeviceRepoAspNetCore/DeviceRepoAspNetCore.csproj --launch-profile http",
+    "forwardPorts": [3000, 5000, 5027], // Ports für React (3000) und ASP.NET Core (5000) freigeben
+    "portsAttributes": {
+      "5027": {
+        "label": "ASP.NET Core Server",
+        "onAutoForward": "openPreview"
+      }
+    },
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-dotnettools.csharp", // C#-Erweiterung für .NET
+          "esbenp.prettier-vscode" // Prettier für Code-Formatierung
+        ]
+      }
+    },
+    "workspaceFolder": "/workspaces/audio-device-repo-server" // Standard-Arbeitsverzeichnis
+  }

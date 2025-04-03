@@ -1,0 +1,71 @@
+# Build and object files
+**/bin/
+**/obj/
+
+# NuGet packages directory
+.nuget/
+**/packages/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# MSTest test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# ReSharper
+_ReSharper*/
+
+# Azure Functions
+func/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sw?
+
+# Ignore the entire .idea folder
+.idea/*
+
+# Except for these specific files
+!.idea/codeStyles/
+!.idea/runConfigurations/
+!.idea/inspectionProfiles/
+
+/public/version.json
+
+**/wwwroot/lib/*
+**/.vs/*
+**/nohup.out
+**/*.csproj.user
