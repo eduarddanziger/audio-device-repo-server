@@ -3,17 +3,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace DeviceRepoAspNetCore.Pages;
 
-public class IndexModel : PageModel
+public class IndexModel(ILogger<IndexModel> logger, CodeVersionProvider versionProvider)
+    : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
-
-    public IndexModel(ILogger<IndexModel> logger)
-    {
-        _logger = logger;
-    }
+    public string Version => versionProvider.CodeVersion;
 
     public void OnGet()
     {
-
+        // Use Version or log it if desired
+        logger.LogInformation("Current version is {Version}", Version);
     }
 }
