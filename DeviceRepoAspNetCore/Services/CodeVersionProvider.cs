@@ -1,4 +1,6 @@
-﻿public class CodeVersionProvider(string? codeVersion)
+﻿namespace DeviceRepoAspNetCore.Services;
+
+public class CodeVersionProvider(string? codeVersion)
 {
     private const string VersionFile = "vers.env";
 

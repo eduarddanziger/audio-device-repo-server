@@ -10,6 +10,12 @@
       <Folder Include="Controllers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="vers.env">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
     <Target Name="RestoreClientSideLibraries" BeforeTargets="Build">
         <Exec Command="libman restore" />
     </Target>
