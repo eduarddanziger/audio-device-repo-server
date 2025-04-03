@@ -5,17 +5,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure logging
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole(options =>
+builder.Logging.AddSimpleConsole(options =>
 {
-#pragma warning disable CS0618 // Type or member is obsolete
+    options.IncludeScopes = true;
+    options.SingleLine = false;
     options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss.fff] ";
-#pragma warning restore CS0618 // Type or member is obsolete
 });
 builder.Logging.AddDebug();
 // builder.Logging.AddEventSourceLogger(); // ETW (Event Tracing for Windows) or EventPipe (cross-platform).
 
 // Add services to the container.
 builder.Services.AddSingleton<IAudioDeviceStorage, InMemoryAudioDeviceStorage>();
+
+builder.Services.AddSingleton(new CodeVersionProvider(CodeVersionProvider.ReadFromFile()));
 
 // Add services to the container.
 builder.Services.AddRazorPages();
