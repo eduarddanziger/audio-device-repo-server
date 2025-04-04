@@ -50,12 +50,6 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Using version: $VERSION"
 
-      - name: Generate vers.env file
-        run: |
-          CLIENT_VERSION="${{ steps.get_version.outputs.VERSION }}"
-          echo "VITE_CLIENT_VERSION=${CLIENT_VERSION}" >> ./DeviceRepoAspNetCore/vers.env
-          echo "DeviceRepoAspNetCore/vers.env file created successfully"
-
       - name: Start Codespace
         run: |
           PAT=${{ secrets.UNIVERSAL_PAT }}

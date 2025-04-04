@@ -17,7 +17,7 @@ builder.Logging.AddDebug();
 // Add services to the container.
 builder.Services.AddSingleton<IAudioDeviceStorage, InMemoryAudioDeviceStorage>();
 
-builder.Services.AddSingleton(new CodeVersionProvider(CodeVersionProvider.ReadFromFile()));
+builder.Services.AddSingleton(new CodeVersionProvider(CodeVersionProvider.ReadFromAssembly()));
 
 // Add services to the container.
 builder.Services.AddRazorPages();

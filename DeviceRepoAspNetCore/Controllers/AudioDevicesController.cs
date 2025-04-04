@@ -52,11 +52,13 @@ namespace DeviceRepoAspNetCore.Controllers
         [HttpGet("search")]
         public IEnumerable<AudioDevice> Search(
             [FromQuery] string query,
-            [FromQuery] string field = null)
+            [FromQuery] string? field = null)
         {
-            return string.IsNullOrEmpty(field) ?
+            return string.IsNullOrEmpty(field)
+                ?
                 // Full-text search across all fields
-                storage.Search(query) :
+                storage.Search(query)
+                :
                 // Field-specific search (e.g., hostName)
                 storage.SearchByField(field, query);
         }
