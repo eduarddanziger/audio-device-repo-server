@@ -1,14 +1,14 @@
-﻿namespace DeviceRepoAspNetCore.Services;
+﻿using System.Reflection;
+
+namespace DeviceRepoAspNetCore.Services;
 
 public class CodeVersionProvider(string? codeVersion)
 {
-    private const string VersionFile = "vers.env";
-
-    public static string? ReadFromFile()
+    public static string? ReadFromAssembly()
     {
-        var versionLine = File.Exists(VersionFile) ? File.ReadAllLines(VersionFile)
-            .FirstOrDefault(line => line.StartsWith("CODE_VERSION=")) : null;
-        return versionLine?.Split('=')[1];
+        var assembly = typeof(CodeVersionProvider).Assembly;
+        var attribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+        return attribute?.InformationalVersion;
     }
-    public string CodeVersion { get; } = codeVersion ?? "Developer build";
+    public string CodeVersion { get; } = codeVersion ?? "Unknown";
 }
