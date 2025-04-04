@@ -54,8 +54,8 @@ jobs:
         run: |
           PAT=${{ secrets.UNIVERSAL_PAT }}
           CS_DISPLAY_NAME="CodeSpaceMain"
-          OWNER="eduarddanziger"          # Replace with your GitHub username or organization name
-          REPO="list-audio-react-app"     # Replace with your repository name (if applicable)
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
           GITHUB_API_URL="https://api.github.com"
           HEADERS=(
               "-H" "Authorization: token $PAT"
