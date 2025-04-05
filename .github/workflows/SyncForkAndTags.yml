@@ -1,0 +1,44 @@
+name: Sync Fork and Tags
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync-fork-tags:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        # Fetch all history so we can properly sync
+        fetch-depth: 0
+
+    - name: Configure Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Add upstream repository
+      run: |
+          UPSTREAM_OWNER="${{ secrets.UPSTREAM_OWNER_NAME }}"
+          UPSTREAM_REPO="${{ github.event.repository.name }}"
+          UPSTREAM_REPO_URL="https://github.com/$UPSTREAM_OWNER/$UPSTREAM_REPO.git"
+          git remote add upstream $UPSTREAM_REPO_URL
+
+    - name: Fetch from upstream
+      run: git fetch upstream
+
+    - name: Merge upstream changes
+      run: |
+        git checkout main
+        git merge upstream/main
+
+    - name: Push merged changes to origin
+      run: git push origin main
+
+    - name: Fetch tags from upstream
+      run: git fetch upstream --tags
+
+    - name: Push tags to origin
+      run: git push origin --tags
