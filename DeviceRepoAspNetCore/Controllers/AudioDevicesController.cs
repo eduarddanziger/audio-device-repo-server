@@ -8,16 +8,21 @@ namespace DeviceRepoAspNetCore.Controllers
     public class AudioDevicesController(IAudioDeviceStorage storage) : ControllerBase
     {
         [HttpGet]
-        public IEnumerable<AudioDevice> GetAll() => storage.GetAll();
+        public IEnumerable<DeviceMessage> GetAll() => storage.GetAll();
 
         [HttpPost]
-        public IActionResult Add([FromBody] AudioDevice device)
+        public IActionResult Add([FromBody] DeviceMessage deviceMessage)
         {
-            storage.Add(device);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            storage.Add(deviceMessage);
             return CreatedAtAction(
                 nameof(GetByKey), 
-                new { pnpId = device.PnpId, hostName = device.HostName }, 
-                device
+                new { pnpId = deviceMessage.PnpId, hostName = deviceMessage.HostName }, 
+                deviceMessage
                 );
         }
 
@@ -50,7 +55,7 @@ namespace DeviceRepoAspNetCore.Controllers
         }
 
         [HttpGet("search")]
-        public IEnumerable<AudioDevice> Search(
+        public IEnumerable<DeviceMessage> Search(
             [FromQuery] string query,
             [FromQuery] string? field = null)
         {
