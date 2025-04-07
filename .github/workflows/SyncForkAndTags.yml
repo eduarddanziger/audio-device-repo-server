@@ -35,7 +35,12 @@ jobs:
         git merge upstream/main
 
     - name: Push merged changes to origin
-      run: git push origin main
+      env:
+        GIT_AUTH: ${{ secrets.UNIVERSAL_PAT }}
+      run: |
+        # Replace origin's remote URL to include your PAT
+        git remote set-url origin https://${GIT_AUTH}@github.com/${{ github.repository }}.git
+        git push origin main
 
     - name: Fetch tags from upstream
       run: git fetch upstream --tags
