@@ -41,9 +41,9 @@ internal class InMemoryAudioDeviceStorage : IAudioDeviceStorage
             {
                 PnpId = "{57F86104-2BA4-4C97-ABCA-4A64B9E496ED}",
                 Name = "Realtec",
-                FlowType = DeviceFlowType.Render,
+                FlowType = DeviceFlowType.RenderAndCapture,
                 RenderVolume = 300,
-                CaptureVolume = 0,
+                CaptureVolume = 250,
                 UpdateDate = DateTime.Parse("2022-01-21T12:20:00"),
                 HostName = "Host3",
                 MessageType = MessageType.Discovered
