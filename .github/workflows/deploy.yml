@@ -89,4 +89,4 @@ jobs:
         run: |
           VERS=${{ steps.get_version.outputs.VERSION }}
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh release create "$VERS" --title "AudioDeviceRepositoryServer $VERS" --notes "Release of Audio Device Repository Server $VERS"
+          gh release create "$VERS" --title "AudioDeviceRepoServer $VERS" --notes "Release of Audio Device Repository Server $VERS"
