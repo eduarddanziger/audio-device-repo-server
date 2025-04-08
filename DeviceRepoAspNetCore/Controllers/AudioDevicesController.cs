@@ -47,10 +47,17 @@ namespace DeviceRepoAspNetCore.Controllers
             return NoContent();
         }
 
-        [HttpPut("{pnpId}/{hostName}/volume")]
-        public IActionResult UpdateVolume(string pnpId, string hostName, [FromBody] int volume)
+        [HttpPut("{pnpId}/{hostName}/volume/render")]
+        public IActionResult UpdateVolumeRender(string pnpId, string hostName, [FromBody] int volume)
         {
-            storage.UpdateVolume(pnpId, hostName, volume);
+            storage.UpdateVolume(pnpId, hostName, volume, true);
+            return NoContent();
+        }
+
+        [HttpPut("{pnpId}/{hostName}/volume/capture")]
+        public IActionResult UpdateVolumeCapture(string pnpId, string hostName, [FromBody] int volume)
+        {
+            storage.UpdateVolume(pnpId, hostName, volume, false);
             return NoContent();
         }
 
