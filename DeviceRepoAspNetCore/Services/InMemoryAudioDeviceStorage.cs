@@ -65,12 +65,21 @@ internal class InMemoryAudioDeviceStorage : IAudioDeviceStorage
         _audioDevices.Remove(key);
     }
 
-    public void UpdateVolume(string pnpId, string hostName, int volume)
+    public void UpdateVolume(string pnpId, string hostName, int volume, bool renderOrCapture)
     {
         var key = $"{pnpId}_{hostName}";
-        if (_audioDevices.TryGetValue(key, out var device))
+        if (!_audioDevices.TryGetValue(key, out var device))
+        {
+            //TODO: logging
+            return;
+        }
+        if (renderOrCapture)
         {
             device.RenderVolume = volume;
+        }
+        else
+        {
+            device.CaptureVolume = volume;
         }
     }
 
