@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace DeviceRepoAspNetCore.Services;
 
@@ -11,9 +12,16 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
 
     public MongoDbAudioDeviceStorage(IOptions<MongoDbSettings> mongoDbSettings)
     {
-        var client = new MongoClient(mongoDbSettings.Value.ConnectionString);
+        const string shortestPassword = "my.shortest.password";
+
+        var decryptedUser = EncryptionUtils.Decrypt(mongoDbSettings.Value.DatabaseUser, shortestPassword);
+        var decryptedPassword = EncryptionUtils.Decrypt(mongoDbSettings.Value.DatabasePassword, shortestPassword);
+        var connectionString = mongoDbSettings.Value.ConnectionStringAnonymous
+            .Replace("mongodb+srv://", $"mongodb+srv://{decryptedUser}:{decryptedPassword}@");
+
+        var client = new MongoClient(connectionString);
         var database = client.GetDatabase(mongoDbSettings.Value.DatabaseName);
-        _devicesCollection = database.GetCollection<AudioDeviceDocument>("audio_devices");
+        _devicesCollection = database.GetCollection<AudioDeviceDocument>("devices");
 
         // Create compound index for PnpId and HostName
         var indexKeysDefinition = Builders<AudioDeviceDocument>.IndexKeys
@@ -140,8 +148,10 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
 
 public class MongoDbSettings
 {   // read out of configuration (appsettings.json)
-    public required string ConnectionString { get; set; }// = "mongodb+srv://edanziger:qwer1234@cluster0.mdlxo.mongodb.net/";
-    public required string DatabaseName { get; set; }// = "DeviceRepo";
+    public required string ConnectionStringAnonymous { get; set; }
+    public required string DatabaseName { get; set; }
+    public required string DatabaseUser { get; set; }
+    public required string DatabasePassword { get; set; }
 }
 
 public class AudioDeviceDocument
@@ -155,7 +165,7 @@ public class AudioDeviceDocument
     public DateTime UpdateDate { get; set; }
     public string HostName { get; set; }
     public MessageType MessageType { get; set; }
-    public List<DeviceChangeEvent> ChangeJournal { get; set; } = new();
+    public List<DeviceChangeEvent> ChangeJournal { get; set; } = [];
 
     public AudioDeviceDocument(DeviceMessage message)
     {
