@@ -15,7 +15,8 @@ public enum MessageType
     Neutral = 0,
     Discovered,
     Detached,
-    VolumeChanged
+    VolumeRenderChanged,
+    VolumeCaptureChanged
 };
 
 public class DeviceMessage
