@@ -1,5 +1,7 @@
 ﻿using DeviceRepoAspNetCore.Models;
 
+namespace DeviceRepoAspNetCore.Services;
+
 public interface IAudioDeviceStorage
 {
     IEnumerable<DeviceMessage> GetAll();
@@ -8,7 +10,4 @@ public interface IAudioDeviceStorage
     void UpdateVolume(string pnpId, string hostName, int volume, bool renderOrCapture);
 
     IEnumerable<DeviceMessage> Search(string query);
-    IEnumerable<DeviceMessage> SearchByField(string field, string query);
 }
-
-

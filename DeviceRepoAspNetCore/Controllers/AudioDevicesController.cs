@@ -1,4 +1,5 @@
 using DeviceRepoAspNetCore.Models;
+using DeviceRepoAspNetCore.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeviceRepoAspNetCore.Controllers
@@ -63,16 +64,9 @@ namespace DeviceRepoAspNetCore.Controllers
 
         [HttpGet("search")]
         public IEnumerable<DeviceMessage> Search(
-            [FromQuery] string query,
-            [FromQuery] string? field = null)
+            [FromQuery] string query)
         {
-            return string.IsNullOrEmpty(field)
-                ?
-                // Full-text search across all fields
-                storage.Search(query)
-                :
-                // Field-specific search (e.g., hostName)
-                storage.SearchByField(field, query);
+            return storage.Search(query);
         }
     }
 }
