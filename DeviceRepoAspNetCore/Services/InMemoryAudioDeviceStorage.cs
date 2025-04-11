@@ -17,7 +17,7 @@ internal class InMemoryAudioDeviceStorage : IAudioDeviceStorage
                 CaptureVolume = 0,
                 UpdateDate = DateTime.Parse("2021-07-01T08:00:00"),
                 HostName = "Host1",
-                MessageType = MessageType.Discovered
+                DeviceMessageType = DeviceMessageType.Discovered
             }
         },
         {
@@ -31,7 +31,7 @@ internal class InMemoryAudioDeviceStorage : IAudioDeviceStorage
                 CaptureVolume = 50,
                 UpdateDate = DateTime.Parse("2023-07-01T11:20:00"),
                 HostName = "Host2",
-                MessageType = MessageType.Discovered
+                DeviceMessageType = DeviceMessageType.Discovered
             }
         },
         {
@@ -45,7 +45,7 @@ internal class InMemoryAudioDeviceStorage : IAudioDeviceStorage
                 CaptureVolume = 250,
                 UpdateDate = DateTime.Parse("2022-01-21T12:20:00"),
                 HostName = "Host3",
-                MessageType = MessageType.Discovered
+                DeviceMessageType = DeviceMessageType.Discovered
             }
         }
     };
@@ -64,7 +64,7 @@ internal class InMemoryAudioDeviceStorage : IAudioDeviceStorage
         _audioDevices.Remove(key);
     }
 
-    public void UpdateVolume(string pnpId, string hostName, int volume, bool renderOrCapture)
+    public void UpdateVolume(string pnpId, string hostName, VolumeMessage volumeMessage)
     {
         var key = $"{pnpId}_{hostName}";
         if (!_audioDevices.TryGetValue(key, out var device))
@@ -72,14 +72,15 @@ internal class InMemoryAudioDeviceStorage : IAudioDeviceStorage
             //TODO: logging
             return;
         }
-        if (renderOrCapture)
+        if (volumeMessage.DeviceMessageType == DeviceMessageType.VolumeRenderChanged)
         {
-            device.RenderVolume = volume;
+            device.RenderVolume = volumeMessage.Volume;
         }
         else
         {
-            device.CaptureVolume = volume;
+            device.CaptureVolume = volumeMessage.Volume;
         }
+        device.UpdateDate = volumeMessage.UpdateDate;
     }
 
     public IEnumerable<DeviceMessage> Search(string query)

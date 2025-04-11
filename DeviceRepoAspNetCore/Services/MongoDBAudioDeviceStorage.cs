@@ -66,11 +66,11 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
             .Set(d => d.RenderVolume, deviceMessage.RenderVolume)
             .Set(d => d.CaptureVolume, deviceMessage.CaptureVolume)
             .Set(d => d.UpdateDate, deviceMessage.UpdateDate)
-            .Set(d => d.MessageType, deviceMessage.MessageType)
+            .Set(d => d.DeviceMessageType, deviceMessage.DeviceMessageType)
             .Push(d => d.ChangeJournal, new DeviceChangeEvent
             {
                 EventDate = deviceMessage.UpdateDate,
-                EventType = deviceMessage.MessageType,
+                EventType = deviceMessage.DeviceMessageType,
                 Details = eventDetails
             });
 
@@ -112,24 +112,26 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
         }
     }
 
-    public void UpdateVolume(string pnpId, string hostName, int volume, bool renderOrCapture)
+    public void UpdateVolume(string pnpId, string hostName, VolumeMessage volumeMessage)
     {
         var filter = Builders<AudioDeviceDocument>.Filter.Where(d =>
             d.PnpId == pnpId &&
             d.HostName == hostName);
 
         var update = Builders<AudioDeviceDocument>.Update
-            .Set(d => d.UpdateDate, DateTime.UtcNow)
+            .Set(d => d.UpdateDate, volumeMessage.UpdateDate)
             .Push(d => d.ChangeJournal, new DeviceChangeEvent
             {
-                EventDate = DateTime.UtcNow,
-                EventType = renderOrCapture ? MessageType.VolumeRenderChanged : MessageType.VolumeCaptureChanged,
-                Details = $"Volume changed to {volume}"
+                EventDate = volumeMessage.UpdateDate,
+                EventType = volumeMessage.DeviceMessageType,
+                Details = volumeMessage.DeviceMessageType == DeviceMessageType.VolumeRenderChanged
+                    ? $"Render volume changed to {volumeMessage}"
+                    : $"Capture volume changed to {volumeMessage}"
             });
 
-        update = renderOrCapture
-            ? update.Set(d => d.RenderVolume, volume)
-            : update.Set(d => d.CaptureVolume, volume);
+        update = volumeMessage.DeviceMessageType == DeviceMessageType.VolumeRenderChanged
+            ? update.Set(d => d.RenderVolume, volumeMessage.Volume)
+            : update.Set(d => d.CaptureVolume, volumeMessage.Volume);
 
         var result = _devicesCollection.UpdateOne(filter, update);
 
@@ -171,7 +173,7 @@ public class AudioDeviceDocument
     public int CaptureVolume { get; set; }
     public DateTime UpdateDate { get; set; }
     public string HostName { get; set; }
-    public MessageType MessageType { get; set; }
+    public DeviceMessageType DeviceMessageType { get; set; }
     public List<DeviceChangeEvent> ChangeJournal { get; set; } = [];
 
     public AudioDeviceDocument(DeviceMessage message)
@@ -183,12 +185,12 @@ public class AudioDeviceDocument
         CaptureVolume = message.CaptureVolume;
         UpdateDate = message.UpdateDate;
         HostName = message.HostName;
-        MessageType = message.MessageType;
+        DeviceMessageType = message.DeviceMessageType;
 
         ChangeJournal.Add(new DeviceChangeEvent
         {
             EventDate = message.UpdateDate,
-            EventType = message.MessageType,
+            EventType = message.DeviceMessageType,
             Details = "Initial device creation"
         });
     }
@@ -204,7 +206,7 @@ public class AudioDeviceDocument
             CaptureVolume = CaptureVolume,
             UpdateDate = UpdateDate,
             HostName = HostName,
-            MessageType = MessageType
+            DeviceMessageType = DeviceMessageType
         };
     }
 }
@@ -212,6 +214,6 @@ public class AudioDeviceDocument
 public class DeviceChangeEvent
 {
     public DateTime EventDate { get; set; }
-    public MessageType EventType { get; set; }
+    public DeviceMessageType EventType { get; set; }
     public required string Details { get; set; }
 }

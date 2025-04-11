@@ -10,9 +10,9 @@ public enum DeviceFlowType
     RenderAndCapture
 };
 
-public enum MessageType
+public enum DeviceMessageType
 {
-    Neutral = 0,
+    Confirmed = 0,
     Discovered,
     Detached,
     VolumeRenderChanged,
@@ -23,7 +23,10 @@ public class DeviceMessage
 {
     [Required]
     public required string PnpId { get; set; }
-    
+
+    [Required]
+    public required string HostName { get; set; }
+
     [Required]
     public required string Name { get; set; }
 
@@ -40,10 +43,8 @@ public class DeviceMessage
     public required DateTime UpdateDate { get; set; }
     
     [Required]
-    public required string HostName { get; set; }
-
-    [Required]
-    public MessageType MessageType { get; set; }
+    [AllowedDeviceMessageTypes(DeviceMessageType.Confirmed, DeviceMessageType.Discovered)]
+    public DeviceMessageType DeviceMessageType { get; set; }
 
     public DeviceMessage Clone()
     {
@@ -55,8 +56,21 @@ public class DeviceMessage
             RenderVolume = this.RenderVolume,
             CaptureVolume = this.CaptureVolume,
             UpdateDate = this.UpdateDate,
-            MessageType = this.MessageType,
+            DeviceMessageType = this.DeviceMessageType,
             HostName = this.HostName
         };
     }
+}
+
+public class VolumeMessage
+{
+    [Required]
+    public required DateTime UpdateDate { get; set; }
+
+    [Required]
+    [AllowedDeviceMessageTypes(DeviceMessageType.VolumeRenderChanged, DeviceMessageType.VolumeCaptureChanged)]
+    public DeviceMessageType DeviceMessageType { get; set; }
+
+    [Required]
+    public int Volume { get; set; }
 }
