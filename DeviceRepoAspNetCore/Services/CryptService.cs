@@ -4,10 +4,9 @@ using System.Text;
 namespace DeviceRepoAspNetCore.Services;
 
 
-public static class EncryptionUtils
+public class CryptService(ILogger<CryptService> logger)
 {
-    // Encrypt plain text data using AES-256 with a passphrase-based key
-    public static string Encrypt(string plainText, string passphrase)
+    public string Encrypt(string plainText, string passphrase)
     {
         if (string.IsNullOrEmpty(plainText))
             throw new ArgumentNullException(nameof(plainText));
@@ -36,8 +35,21 @@ public static class EncryptionUtils
         return Convert.ToBase64String(ms.ToArray());
     }
 
-    // Decrypt ciphertext using passphrase
-    public static string Decrypt(string cipherText, string passphrase)
+    public string TryDecryptOrReturnOriginal(string originalText, string passphrase)
+    {
+        try
+        {
+            return Decrypt(originalText, passphrase);
+        }
+        catch
+        {
+            logger.LogWarning("Decryption failed for the provided text. Returning original text.");
+        }
+
+        return originalText;
+    }
+
+    public string Decrypt(string cipherText, string passphrase)
     {
         if (string.IsNullOrEmpty(cipherText))
             throw new ArgumentNullException(nameof(cipherText));

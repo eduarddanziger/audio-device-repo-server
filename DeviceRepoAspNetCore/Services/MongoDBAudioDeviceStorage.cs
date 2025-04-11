@@ -8,16 +8,19 @@ namespace DeviceRepoAspNetCore.Services;
 
 public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
 {
+    private readonly ILogger<CryptService> _logger;
     private readonly IMongoCollection<AudioDeviceDocument> _devicesCollection;
 
-    public MongoDbAudioDeviceStorage(IOptions<MongoDbSettings> mongoDbSettings)
+    public MongoDbAudioDeviceStorage(IOptions<MongoDbSettings> mongoDbSettings, CryptService cryptService, ILogger<CryptService> logger)
     {
+        _logger = logger;
         const string shortestPassword = "my.shortest.password";
+        const string urlPrefix = "mongodb+srv://";
 
-        var decryptedUser = EncryptionUtils.Decrypt(mongoDbSettings.Value.DatabaseUser, shortestPassword);
-        var decryptedPassword = EncryptionUtils.Decrypt(mongoDbSettings.Value.DatabasePassword, shortestPassword);
+        var decryptedUser = cryptService.TryDecryptOrReturnOriginal(mongoDbSettings.Value.DatabaseUser, shortestPassword);
+        var decryptedPassword = cryptService.TryDecryptOrReturnOriginal(mongoDbSettings.Value.DatabasePassword, shortestPassword);
         var connectionString = mongoDbSettings.Value.ConnectionStringAnonymous
-            .Replace("mongodb+srv://", $"mongodb+srv://{decryptedUser}:{decryptedPassword}@");
+            .Replace(urlPrefix, $"{urlPrefix}{decryptedUser}:{decryptedPassword}@");
 
         var client = new MongoClient(connectionString);
         var database = client.GetDatabase(mongoDbSettings.Value.DatabaseName);
@@ -43,11 +46,15 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
         var existingDevice = _devicesCollection.Find(d =>
             d.PnpId == deviceMessage.PnpId &&
             d.HostName == deviceMessage.HostName).FirstOrDefault();
-        var eventDetails = 
-            existingDevice == null 
-                ? "Device creation"
-                : "Device entire update";
+        if (existingDevice != null)
+        {
+            _logger.LogWarning("Device already exists, updating instead of adding");
+        }
 
+        var eventDetails = 
+        existingDevice == null 
+            ? "Device creation"
+            : "Device entire update";
 
         var filter = Builders<AudioDeviceDocument>.Filter.And(
             Builders<AudioDeviceDocument>.Filter.Eq(d => d.PnpId, deviceMessage.PnpId),
