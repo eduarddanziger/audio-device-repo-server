@@ -1,11 +1,26 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.IO.Hashing;
 
 namespace DeviceRepoAspNetCore.Services;
 
 
 public class CryptService(ILogger<CryptService> logger)
 {
+    public static string ComputeChecksum(string str)
+    {
+        var data = Encoding.UTF8.GetBytes(str);
+        // Create a CRC32 instance
+        var crc = new Crc32();
+        crc.Append(data);
+
+        // Get the CRC32 hash as a byte array
+        var hashBytes = crc.GetCurrentHash();
+        // Reverse the byte order (major and minor bytes)
+        Array.Reverse(hashBytes);
+
+        return Convert.ToHexString(hashBytes).PadLeft(8, '0').ToLower();
+    }
     public string Encrypt(string plainText, string passphrase)
     {
         if (string.IsNullOrEmpty(plainText))

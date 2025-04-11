@@ -44,4 +44,19 @@ public class DeviceMessage
 
     [Required]
     public MessageType MessageType { get; set; }
+
+    public DeviceMessage Clone()
+    {
+        return new DeviceMessage
+        {
+            PnpId = this.PnpId,
+            Name = this.Name,
+            FlowType = this.FlowType,
+            RenderVolume = this.RenderVolume,
+            CaptureVolume = this.CaptureVolume,
+            UpdateDate = this.UpdateDate,
+            MessageType = this.MessageType,
+            HostName = this.HostName
+        };
+    }
 }

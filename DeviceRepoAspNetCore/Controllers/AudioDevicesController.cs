@@ -19,10 +19,13 @@ namespace DeviceRepoAspNetCore.Controllers
                 return BadRequest(ModelState);
             }
 
-            storage.Add(deviceMessage);
+            var clonedWithHashedHost = deviceMessage.Clone();
+            clonedWithHashedHost.HostName = CryptService.ComputeChecksum(deviceMessage.HostName);
+
+            storage.Add(clonedWithHashedHost);
             return CreatedAtAction(
                 nameof(GetByKey), 
-                new { pnpId = deviceMessage.PnpId, hostName = deviceMessage.HostName }, 
+                new { pnpId = clonedWithHashedHost.PnpId, hostName = clonedWithHashedHost.HostName }, 
                 deviceMessage
                 );
         }
