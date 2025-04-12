@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DeviceRepoAspNetCore.Services;
 
@@ -71,6 +72,7 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
             {
                 EventDate = deviceMessage.UpdateDate,
                 EventType = deviceMessage.DeviceMessageType,
+                FlowType = deviceMessage.FlowType,
                 Details = eventDetails
             });
 
@@ -120,13 +122,11 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
 
         var update = Builders<AudioDeviceDocument>.Update
             .Set(d => d.UpdateDate, volumeMessage.UpdateDate)
-            .Push(d => d.ChangeJournal, new DeviceChangeEvent
+            .Push(d => d.ChangeJournal, new VolumeChangeEvent
             {
                 EventDate = volumeMessage.UpdateDate,
                 EventType = volumeMessage.DeviceMessageType,
-                Details = volumeMessage.DeviceMessageType == DeviceMessageType.VolumeRenderChanged
-                    ? $"Render volume changed to {volumeMessage}"
-                    : $"Capture volume changed to {volumeMessage}"
+                Volume = volumeMessage.Volume
             });
 
         update = volumeMessage.DeviceMessageType == DeviceMessageType.VolumeRenderChanged
@@ -174,7 +174,7 @@ public class AudioDeviceDocument
     public DateTime UpdateDate { get; set; }
     public string HostName { get; set; }
     public DeviceMessageType DeviceMessageType { get; set; }
-    public List<DeviceChangeEvent> ChangeJournal { get; set; } = [];
+    public List<ChangeEvent> ChangeJournal { get; set; } = [];
 
     public AudioDeviceDocument(DeviceMessage message)
     {
@@ -211,9 +211,23 @@ public class AudioDeviceDocument
     }
 }
 
-public class DeviceChangeEvent
+[BsonDiscriminator(RootClass = true)]
+[BsonKnownTypes(typeof(DeviceChangeEvent), typeof(VolumeChangeEvent))]
+public abstract class ChangeEvent
 {
     public DateTime EventDate { get; set; }
     public DeviceMessageType EventType { get; set; }
+
+}
+
+
+public class DeviceChangeEvent : ChangeEvent
+{
+    public DeviceFlowType FlowType { get; set; }
     public required string Details { get; set; }
+}
+
+public class VolumeChangeEvent : ChangeEvent
+{
+    public int Volume { get; set; }
 }
