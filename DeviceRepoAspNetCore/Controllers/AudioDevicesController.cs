@@ -19,13 +19,12 @@ namespace DeviceRepoAspNetCore.Controllers
                 return BadRequest(ModelState);
             }
 
-            var clonedWithHashedHost = deviceMessage.Clone();
-            clonedWithHashedHost.HostName = CryptService.ComputeChecksum(deviceMessage.HostName);
+            deviceMessage = deviceMessage with { HostName = CryptService.ComputeChecksum(deviceMessage.HostName) };
 
-            storage.Add(clonedWithHashedHost);
+            storage.Add(deviceMessage);
             return CreatedAtAction(
                 nameof(GetByKey), 
-                new { pnpId = clonedWithHashedHost.PnpId, hostName = clonedWithHashedHost.HostName }, 
+                new { pnpId = deviceMessage.PnpId, hostName = deviceMessage.HostName },
                 deviceMessage
                 );
         }
@@ -33,6 +32,8 @@ namespace DeviceRepoAspNetCore.Controllers
         [HttpGet("{pnpId}/{hostName}")]
         public IActionResult GetByKey(string pnpId, string hostName)
         {
+            hostName = CryptService.ComputeChecksum(hostName);
+
             var device = storage.GetAll().FirstOrDefault(
                 d => d.PnpId == pnpId && d.HostName == hostName
                 );
@@ -47,6 +48,8 @@ namespace DeviceRepoAspNetCore.Controllers
         [HttpDelete("{pnpId}/{hostName}")]
         public IActionResult Remove(string pnpId, string hostName)
         {
+            hostName = CryptService.ComputeChecksum(hostName);
+
             storage.Remove(pnpId, hostName);
             return NoContent();
         }
@@ -54,6 +57,8 @@ namespace DeviceRepoAspNetCore.Controllers
         [HttpPut("{pnpId}/{hostName}")]
         public IActionResult UpdateVolume(string pnpId, string hostName, [FromBody] VolumeMessage volumeMessage)
         {
+            hostName = CryptService.ComputeChecksum(hostName);
+
             storage.UpdateVolume(pnpId, hostName, volumeMessage);
             return NoContent();
         }
@@ -63,7 +68,10 @@ namespace DeviceRepoAspNetCore.Controllers
         public IEnumerable<DeviceMessage> Search(
             [FromQuery] string query)
         {
-            return storage.Search(query);
+            var hashedHost = CryptService.ComputeChecksum(query);
+
+            return storage.Search(query)
+                .Union(storage.Search(hashedHost));
         }
     }
 }
