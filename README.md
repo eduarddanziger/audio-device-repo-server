@@ -2,12 +2,14 @@
 
 The backend of Audio Device Repository Server as a ASP.Net Core Server with REST API (C# / MongoDB).
 
+## Latest rollout on GitHub Infrastructure
+
+- The ASP.NET Core server is started by a client request, if the client runs on the GitHub Infrastructure, too.
+- The GUI client resides in a repository [audio-device-repo-server](https://github.com/eduarddanziger/audio-device-repo-server/)
 
 ## Development environment
 
-### Starting ASP.NET Core Web API Server
-
-- Via Terminal using the following command:
+- The ASP.NET Core server can be started via Terminal using the following command:
 
 ```powershell or bash
 cd DeviceRepoAspNetCore
