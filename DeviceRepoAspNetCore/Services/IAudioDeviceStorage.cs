@@ -1,14 +1,13 @@
-﻿using DeviceRepoAspNetCore.Models;
+﻿using DeviceRepoAspNetCore.Models.RestApi;
+
+namespace DeviceRepoAspNetCore.Services;
 
 public interface IAudioDeviceStorage
 {
-    IEnumerable<DeviceMessage> GetAll();
-    void Add(DeviceMessage deviceMessage);
+    IEnumerable<EntireDeviceMessage> GetAll();
+    void Add(EntireDeviceMessage entireDeviceMessage);
     void Remove(string pnpId, string hostName);
-    void UpdateVolume(string pnpId, string hostName, int volume, bool renderOrCapture);
+    void UpdateVolume(string pnpId, string hostName, VolumeChangeMessage volumeChangeMessage);
 
-    IEnumerable<DeviceMessage> Search(string query);
-    IEnumerable<DeviceMessage> SearchByField(string field, string query);
+    IEnumerable<EntireDeviceMessage> Search(string query);
 }
-
-

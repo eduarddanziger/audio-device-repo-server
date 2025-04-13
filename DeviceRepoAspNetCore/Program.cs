@@ -1,5 +1,6 @@
 using DeviceRepoAspNetCore.Middleware;
 using DeviceRepoAspNetCore.Services;
+using DeviceRepoAspNetCore.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +16,11 @@ builder.Logging.AddDebug();
 // builder.Logging.AddEventSourceLogger(); // ETW (Event Tracing for Windows) or EventPipe (cross-platform).
 
 // Add services to the container.
-builder.Services.AddSingleton<IAudioDeviceStorage, InMemoryAudioDeviceStorage>();
-
+builder.Services.Configure<MongoDbSettings>(
+    builder.Configuration.GetSection("MongoDbSettings"));
+builder.Services.AddSingleton<CryptService>();
+//builder.Services.AddSingleton<IAudioDeviceStorage, InMemoryAudioDeviceStorage>();
+builder.Services.AddSingleton<IAudioDeviceStorage, MongoDbAudioDeviceStorage>();
 builder.Services.AddSingleton(new CodeVersionProvider(CodeVersionProvider.ReadFromAssembly()));
 
 // Add services to the container.
