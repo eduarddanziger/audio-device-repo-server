@@ -1,4 +1,4 @@
-using DeviceRepoAspNetCore.Models;
+using DeviceRepoAspNetCore.Models.RestApi;
 using DeviceRepoAspNetCore.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,23 +9,23 @@ namespace DeviceRepoAspNetCore.Controllers
     public class AudioDevicesController(IAudioDeviceStorage storage) : ControllerBase
     {
         [HttpGet]
-        public IEnumerable<DeviceMessage> GetAll() => storage.GetAll();
+        public IEnumerable<EntireDeviceMessage> GetAll() => storage.GetAll();
 
         [HttpPost]
-        public IActionResult Add([FromBody] DeviceMessage deviceMessage)
+        public IActionResult Add([FromBody] EntireDeviceMessage entireDeviceMessage)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            deviceMessage = deviceMessage with { HostName = CryptService.ComputeChecksum(deviceMessage.HostName) };
+            entireDeviceMessage = entireDeviceMessage with { HostName = CryptService.ComputeChecksum(entireDeviceMessage.HostName) };
 
-            storage.Add(deviceMessage);
+            storage.Add(entireDeviceMessage);
             return CreatedAtAction(
                 nameof(GetByKey), 
-                new { pnpId = deviceMessage.PnpId, hostName = deviceMessage.HostName },
-                deviceMessage
+                new { pnpId = entireDeviceMessage.PnpId, hostName = entireDeviceMessage.HostName },
+                entireDeviceMessage
                 );
         }
 
@@ -55,17 +55,17 @@ namespace DeviceRepoAspNetCore.Controllers
         }
 
         [HttpPut("{pnpId}/{hostName}")]
-        public IActionResult UpdateVolume(string pnpId, string hostName, [FromBody] VolumeMessage volumeMessage)
+        public IActionResult UpdateVolume(string pnpId, string hostName, [FromBody] VolumeChangeMessage volumeChangeMessage)
         {
             hostName = CryptService.ComputeChecksum(hostName);
 
-            storage.UpdateVolume(pnpId, hostName, volumeMessage);
+            storage.UpdateVolume(pnpId, hostName, volumeChangeMessage);
             return NoContent();
         }
 
 
         [HttpGet("search")]
-        public IEnumerable<DeviceMessage> Search(
+        public IEnumerable<EntireDeviceMessage> Search(
             [FromQuery] string query)
         {
             var hashedHost = CryptService.ComputeChecksum(query);

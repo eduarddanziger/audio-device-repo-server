@@ -1,9 +1,10 @@
-﻿using DeviceRepoAspNetCore.Models;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using MongoDB.Bson.Serialization.Attributes;
+using DeviceRepoAspNetCore.Models.RestApi;
+using DeviceRepoAspNetCore.Settings;
+using DeviceRepoAspNetCore.Models.MongoDb;
 
 namespace DeviceRepoAspNetCore.Services;
 
@@ -36,17 +37,17 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
         _devicesCollection.Indexes.CreateOne(indexModel);
     }
 
-    public IEnumerable<DeviceMessage> GetAll()
+    public IEnumerable<EntireDeviceMessage> GetAll()
     {
         return _devicesCollection.Find(_ => true).ToList()
             .Select(d => d.ToDeviceMessage());
     }
 
-    public void Add(DeviceMessage deviceMessage)
+    public void Add(EntireDeviceMessage entireDeviceMessage)
     {
         var existingDevice = _devicesCollection.Find(d =>
-            d.PnpId == deviceMessage.PnpId &&
-            d.HostName == deviceMessage.HostName).FirstOrDefault();
+            d.PnpId == entireDeviceMessage.PnpId &&
+            d.HostName == entireDeviceMessage.HostName).FirstOrDefault();
         if (existingDevice != null)
         {
             _logger.LogWarning("Device already exists, updating instead of adding");
@@ -58,21 +59,21 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
             : "Device entire update";
 
         var filter = Builders<AudioDeviceDocument>.Filter.And(
-            Builders<AudioDeviceDocument>.Filter.Eq(d => d.PnpId, deviceMessage.PnpId),
-            Builders<AudioDeviceDocument>.Filter.Eq(d => d.HostName, deviceMessage.HostName));
+            Builders<AudioDeviceDocument>.Filter.Eq(d => d.PnpId, entireDeviceMessage.PnpId),
+            Builders<AudioDeviceDocument>.Filter.Eq(d => d.HostName, entireDeviceMessage.HostName));
 
         var update = Builders<AudioDeviceDocument>.Update
-            .Set(d => d.Name, deviceMessage.Name)
-            .Set(d => d.FlowType, deviceMessage.FlowType)
-            .Set(d => d.RenderVolume, deviceMessage.RenderVolume)
-            .Set(d => d.CaptureVolume, deviceMessage.CaptureVolume)
-            .Set(d => d.UpdateDate, deviceMessage.UpdateDate)
-            .Set(d => d.DeviceMessageType, deviceMessage.DeviceMessageType)
+            .Set(d => d.Name, entireDeviceMessage.Name)
+            .Set(d => d.FlowType, entireDeviceMessage.FlowType)
+            .Set(d => d.RenderVolume, entireDeviceMessage.RenderVolume)
+            .Set(d => d.CaptureVolume, entireDeviceMessage.CaptureVolume)
+            .Set(d => d.UpdateDate, entireDeviceMessage.UpdateDate)
+            .Set(d => d.DeviceMessageType, entireDeviceMessage.DeviceMessageType)
             .Push(d => d.ChangeJournal, new DeviceChangeEvent
             {
-                EventDate = deviceMessage.UpdateDate,
-                EventType = deviceMessage.DeviceMessageType,
-                FlowType = deviceMessage.FlowType,
+                EventDate = entireDeviceMessage.UpdateDate,
+                EventType = entireDeviceMessage.DeviceMessageType,
+                FlowType = entireDeviceMessage.FlowType,
                 Details = eventDetails
             });
 
@@ -87,19 +88,6 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
         {
             throw new InvalidOperationException("Failed to add device");
         }
-
-
-        // var existingDevice = _devicesCollection.Find(d =>
-        //     d.PnpId == deviceMessage.PnpId &&
-        //     d.HostName == deviceMessage.HostName).FirstOrDefault();
-        //
-        // if (existingDevice != null)
-        // {
-        //     throw new InvalidOperationException("Device already exists");
-        // }
-        //
-        // var deviceDoc = new AudioDeviceDocument(deviceMessage);
-        // _devicesCollection.InsertOne(deviceDoc);
     }
 
     public void Remove(string pnpId, string hostName)
@@ -114,24 +102,24 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
         }
     }
 
-    public void UpdateVolume(string pnpId, string hostName, VolumeMessage volumeMessage)
+    public void UpdateVolume(string pnpId, string hostName, VolumeChangeMessage volumeChangeMessage)
     {
         var filter = Builders<AudioDeviceDocument>.Filter.Where(d =>
             d.PnpId == pnpId &&
             d.HostName == hostName);
 
         var update = Builders<AudioDeviceDocument>.Update
-            .Set(d => d.UpdateDate, volumeMessage.UpdateDate)
+            .Set(d => d.UpdateDate, volumeChangeMessage.UpdateDate)
             .Push(d => d.ChangeJournal, new VolumeChangeEvent
             {
-                EventDate = volumeMessage.UpdateDate,
-                EventType = volumeMessage.DeviceMessageType,
-                Volume = volumeMessage.Volume
+                EventDate = volumeChangeMessage.UpdateDate,
+                EventType = volumeChangeMessage.DeviceMessageType,
+                Volume = volumeChangeMessage.Volume
             });
 
-        update = volumeMessage.DeviceMessageType == DeviceMessageType.VolumeRenderChanged
-            ? update.Set(d => d.RenderVolume, volumeMessage.Volume)
-            : update.Set(d => d.CaptureVolume, volumeMessage.Volume);
+        update = volumeChangeMessage.DeviceMessageType == DeviceMessageType.VolumeRenderChanged
+            ? update.Set(d => d.RenderVolume, volumeChangeMessage.Volume)
+            : update.Set(d => d.CaptureVolume, volumeChangeMessage.Volume);
 
         var result = _devicesCollection.UpdateOne(filter, update);
 
@@ -141,7 +129,7 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
         }
     }
 
-    public IEnumerable<DeviceMessage> Search(string query)
+    public IEnumerable<EntireDeviceMessage> Search(string query)
     {
         var filter = Builders<AudioDeviceDocument>.Filter.Or(
             Builders<AudioDeviceDocument>.Filter.Regex(d => d.PnpId, new BsonRegularExpression(query, "i")),
@@ -153,81 +141,4 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
             .Select(d => d.ToDeviceMessage());
     }
 
-}
-
-public class MongoDbSettings
-{   // read out of configuration (appsettings.json)
-    public required string ConnectionStringAnonymous { get; set; }
-    public required string DatabaseName { get; set; }
-    public required string DatabaseUser { get; set; }
-    public required string DatabasePassword { get; set; }
-}
-
-public class AudioDeviceDocument
-{
-    public ObjectId Id { get; set; }
-    public string PnpId { get; set; }
-    public string Name { get; set; }
-    public DeviceFlowType FlowType { get; set; }
-    public int RenderVolume { get; set; }
-    public int CaptureVolume { get; set; }
-    public DateTime UpdateDate { get; set; }
-    public string HostName { get; set; }
-    public DeviceMessageType DeviceMessageType { get; set; }
-    public List<ChangeEvent> ChangeJournal { get; set; } = [];
-
-    public AudioDeviceDocument(DeviceMessage message)
-    {
-        PnpId = message.PnpId;
-        Name = message.Name;
-        FlowType = message.FlowType;
-        RenderVolume = message.RenderVolume;
-        CaptureVolume = message.CaptureVolume;
-        UpdateDate = message.UpdateDate;
-        HostName = message.HostName;
-        DeviceMessageType = message.DeviceMessageType;
-
-        ChangeJournal.Add(new DeviceChangeEvent
-        {
-            EventDate = message.UpdateDate,
-            EventType = message.DeviceMessageType,
-            Details = "Initial device creation"
-        });
-    }
-
-    public DeviceMessage ToDeviceMessage()
-    {
-        return new DeviceMessage
-        {
-            PnpId = PnpId,
-            Name = Name,
-            FlowType = FlowType,
-            RenderVolume = RenderVolume,
-            CaptureVolume = CaptureVolume,
-            UpdateDate = UpdateDate,
-            HostName = HostName,
-            DeviceMessageType = DeviceMessageType
-        };
-    }
-}
-
-[BsonDiscriminator(RootClass = true)]
-[BsonKnownTypes(typeof(DeviceChangeEvent), typeof(VolumeChangeEvent))]
-public abstract class ChangeEvent
-{
-    public DateTime EventDate { get; set; }
-    public DeviceMessageType EventType { get; set; }
-
-}
-
-
-public class DeviceChangeEvent : ChangeEvent
-{
-    public DeviceFlowType FlowType { get; set; }
-    public required string Details { get; set; }
-}
-
-public class VolumeChangeEvent : ChangeEvent
-{
-    public int Volume { get; set; }
 }

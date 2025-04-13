@@ -1,5 +1,6 @@
 using DeviceRepoAspNetCore.Middleware;
 using DeviceRepoAspNetCore.Services;
+using DeviceRepoAspNetCore.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 

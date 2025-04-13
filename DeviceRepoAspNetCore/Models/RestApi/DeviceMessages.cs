@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DeviceRepoAspNetCore.Models;
+namespace DeviceRepoAspNetCore.Models.RestApi;
 
 public enum DeviceFlowType
 {
@@ -19,7 +19,7 @@ public enum DeviceMessageType
     VolumeCaptureChanged
 };
 
-public record DeviceMessage
+public record EntireDeviceMessage
 {
     [Required]
     public required string PnpId { get; init; }
@@ -47,7 +47,7 @@ public record DeviceMessage
     public DeviceMessageType DeviceMessageType { get; init; }
 }
 
-public record VolumeMessage
+public record VolumeChangeMessage
 {
     [Required]
     public required DateTime UpdateDate { get; init; }
