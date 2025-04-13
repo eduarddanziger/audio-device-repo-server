@@ -110,6 +110,7 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
 
         var update = Builders<AudioDeviceDocument>.Update
             .Set(d => d.UpdateDate, volumeChangeMessage.UpdateDate)
+            .Set(d => d.DeviceMessageType, volumeChangeMessage.DeviceMessageType)
             .Push(d => d.ChangeJournal, new VolumeChangeEvent
             {
                 EventDate = volumeChangeMessage.UpdateDate,
