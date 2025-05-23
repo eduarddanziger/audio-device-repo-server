@@ -2,13 +2,11 @@
 
 This API provides endpoints for managing audio devices.
 
-## Endpoints
-
-### Get All Audio Devices
+## Get All Audio Devices
 
 Retrieves a list of all available audio devices.
 
-### GET /api/AudioDevices
+**GET /api/AudioDevices**
 
 **Response**: 200 OK with an array of audio device objects.
 
@@ -33,7 +31,7 @@ Example response:
 
 Adds a new audio device to the system.
 
-### GET /api/AudioDevices
+**POST /api/AudioDevices**
 
 **Body**: Audio device object
 
@@ -55,7 +53,7 @@ Example request:
 
 Removes an audio device from the system.
 
-### DELETE /api/AudioDevices/{pnpId}
+**DELETE /api/AudioDevices/\{pnpId\/\{hostName\}**
 
 
 **Parameters**:
@@ -67,8 +65,7 @@ Removes an audio device from the system.
 
 Updates the volume of a specific audio device.
 
-### PUT /api/AudioDevices/{pnpId}/volume
-
+**PUT /api/AudioDevices/{pnpId}/volume**
 
 **Parameters**:
 - `pnpId`: The unique identifier of the audio device
@@ -82,7 +79,7 @@ Example request:
 
 ## Object Model
 
-### AudioDevice
+### EntireDeviceMessage
 
 | Property | Type | Description |
 |----------|------|-------------|
