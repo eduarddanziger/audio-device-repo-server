@@ -99,7 +99,11 @@ jobs:
           # Replace $date$ and $version$ in the Release Notes and copy to artifacts
           sed -e "s/\$date\$/$(echo $DATE | sed 's/[&/\]/\\&/g')/g" \
               -e "s/\$version\$/$(echo $VERSION | sed 's/[&/\]/\\&/g')/g" \
-              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md    
+              AudioDeviceRepoServer-Release-Notes.md
+
+          sed -e "s/\$date\$/$(echo $DATE | sed 's/[&/\]/\\&/g')/g" \
+              -e "s/\$version\$/$(echo $VERSION | sed 's/[&/\]/\\&/g')/g" \
+              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md
 
       - name: Upload entire artifacts directory
         uses: actions/upload-artifact@v4
