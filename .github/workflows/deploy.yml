@@ -85,8 +85,29 @@ jobs:
       #     curl -X POST "${HEADERS[@]}" "$START_URL"
       #     echo "...Codespace started: $CS_NAME."
 
+      - name: Copy Release Notes to artifacts 
+        run: |
+          # Create the artifacts directory if it doesn't exist
+          mkdir -p artifacts
+
+          # Set variables
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Replace $date$ and $version$ in the Release Notes and copy to artifacts
+          sed -e "s/\$date\$/$(echo $DATE | sed 's/[&/\]/\\&/g')/g" \
+              -e "s/\$version\$/$(echo $VERSION | sed 's/[&/\]/\\&/g')/g" \
+              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md    
+
+      - name: Upload entire artifacts directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: artifacts
+
       - name: Create Release
         run: |
           VERS=${{ steps.get_version.outputs.VERSION }}
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh release create "$VERS" --title "AudioDeviceRepoServer $VERS" --notes "Release of Audio Device Repository Server $VERS"
+          gh release upload "$VERS" artifacts/*.*
