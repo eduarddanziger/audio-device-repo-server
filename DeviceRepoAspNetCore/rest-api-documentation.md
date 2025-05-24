@@ -11,18 +11,28 @@ Retrieves a list of all available audio devices.
 **GET /api/AudioDevices**
 
 **Response:**  
-- (succ) 200 OK  
+- (succ) 200 OK
 ```json
 [
   {
     "pnpId": "8A7FB8B8-37CC-4053-9BC7-F526E3B64892",
-    "hostName": "e0c9035898dd52fc65c41454cec9c4d2611bfb37",  // Hashed
+    "hostName": "e0c9035898dd52fc65c41454cec9c4d2611bfb37",
     "name": "Bluetooth Headset",
     "flowType": "Render",
     "renderVolume": 80,
     "captureVolume": 0,
     "updateDate": "2023-12-01T14:30:00Z",
     "deviceMessageType": "Confirmed"
+  },
+  {
+    "pnpId": "B2C3D4E5-F6A7-8B9C-0D1E-2F3A4B5C6D7E",
+    "hostName": "9c4d2611bfb3752fc65c414e0c903589d2611bf",
+    "name": "USB Microphone",
+    "flowType": "Capture",
+    "renderVolume": 0,
+    "captureVolume": 90,
+    "updateDate": "2023-12-01T14:35:00Z",
+    "deviceMessageType": "Discovered"
   }
 ]
 ```
@@ -130,12 +140,12 @@ Updates the volume of a specific audio device.
 
 ## Search Audio Devices
 
-Search for audio devices by a query string (host name or its hash).
+Search for audio devices by device description.
 
 **GET /api/AudioDevices/search?query={query}**
 
 **Query parameters:**
-- `query`: The search string (substring of device descriotion)
+- `query`: The search string (substring of device description)
 
 **Response:**
 - (succ) 200 OK  
