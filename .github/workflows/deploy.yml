@@ -91,18 +91,9 @@ jobs:
         run: |
           # Create the artifacts directory if it doesn't exist
           mkdir -p artifacts
-
           # Set variables
           VERSION=${{ steps.get_version.outputs.VERSION }}
-          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-          # Debug output to see what we're replacing
-          echo "Replacing \$version\$ with: $VERSION"
-          echo "Replacing \$date\$ with: $DATE"
-          
-          # Use a more reliable approach with perl (handles special characters better)
-          perl -pe "s/\\\$date\\\$/$DATE/g; s/\\\$version\\\$/$VERSION/g" \
-              AudioDeviceRepoServer-Release-Notes.md
+          DATE=$(date +"%Y-%m-%d %H:%M:%S")
 
           perl -pe "s/\\\$date\\\$/$DATE/g; s/\\\$version\\\$/$VERSION/g" \
               AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md
