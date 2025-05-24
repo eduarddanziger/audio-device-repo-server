@@ -5,14 +5,15 @@ namespace DeviceRepoAspNetCore.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class InfoController(CodeVersionProvider versionProvider) : ControllerBase
+    public class InfoController(VersionProvider versionProvider) : ControllerBase
     {
         [HttpGet("version")]
         public IActionResult GetVersion()
         {
             return Ok(new
             {
-                releaseVersion = versionProvider.CodeVersion
+                releaseVersion = versionProvider.CodeVersion,
+                lastCommitDate = versionProvider.LastCommitDate
             });
         }
     }
