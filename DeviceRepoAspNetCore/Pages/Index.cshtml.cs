@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace DeviceRepoAspNetCore.Pages;
 
-public class IndexModel(ILogger<IndexModel> logger, CodeVersionProvider versionProvider)
+public class IndexModel(ILogger<IndexModel> logger, VersionProvider versionProvider)
     : PageModel
 {
     public string Version => versionProvider.CodeVersion;

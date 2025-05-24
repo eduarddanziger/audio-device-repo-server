@@ -21,7 +21,7 @@ builder.Services.Configure<MongoDbSettings>(
 builder.Services.AddSingleton<CryptService>();
 //builder.Services.AddSingleton<IAudioDeviceStorage, InMemoryAudioDeviceStorage>();
 builder.Services.AddSingleton<IAudioDeviceStorage, MongoDbAudioDeviceStorage>();
-builder.Services.AddSingleton(new CodeVersionProvider(CodeVersionProvider.ReadFromAssembly()));
+builder.Services.AddSingleton(new VersionProvider(VersionProvider.ReadVersionFromAssembly()));
 
 // Add services to the container.
 builder.Services.AddRazorPages();

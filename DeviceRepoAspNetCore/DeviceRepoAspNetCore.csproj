@@ -16,10 +16,6 @@
     <Import Project="$(MSBuildThisFileDirectory)..\msbuildLib\Ed.CSharp.targets" />
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="MongoDB.Driver" Version="3.3.0" />
       <PackageReference Include="System.IO.Hashing" Version="9.0.4" />
     </ItemGroup>
