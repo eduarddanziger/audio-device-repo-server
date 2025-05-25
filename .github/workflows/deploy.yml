@@ -93,7 +93,7 @@ jobs:
           mkdir -p artifacts
           # Set variables
           VERSION=${{ steps.get_version.outputs.VERSION }}
-          DATE=$(date +"%Y-%m-%d %H:%M:%S")
+          DATE=$(TZ=Europe/Berlin date +"%d.%m.%Y %H:%M:%S%z")
 
           perl -pe "s/\\\$date\\\$/$DATE/g; s/\\\$version\\\$/$VERSION/g" \
               AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md
