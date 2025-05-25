@@ -91,15 +91,13 @@ jobs:
         run: |
           # Create the artifacts directory if it doesn't exist
           mkdir -p artifacts
-
           # Set variables
           VERSION=${{ steps.get_version.outputs.VERSION }}
-          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          DATE=$(TZ=Europe/Berlin date +"%d.%m.%Y %H:%M:%S%z")
 
-          # Replace $date$ and $version$ in the Release Notes and copy to artifacts
-          sed -e "s/\$date\$/$(echo $DATE | sed 's/[&/\]/\\&/g')/g" \
-              -e "s/\$version\$/$(echo $VERSION | sed 's/[&/\]/\\&/g')/g" \
-              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md    
+          perl -pe "s/\\\$date\\\$/$DATE/g; s/\\\$version\\\$/$VERSION/g" \
+              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md
+
 
       - name: Upload entire artifacts directory
         uses: actions/upload-artifact@v4
