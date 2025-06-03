@@ -5,7 +5,14 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Audio Device Repository</h1>
-    <p>Version: @Model.Version</p>
-    <p>REST Api Example: <a href="@Url.Content("~/api/AudioDevices")">Get Audio Device List</a>.</p>
+	<h4 style="font-size: 1.3rem;">Audio Device Repository Server</h4>
+	<div class="mx-auto text-start" style="display: inline-block;">
+		Current Release Version @Model.Version<br />
+		Timestamp @Model.Timestamp
+	</div>
+	<h4 style="font-size: 1.3rem; margin-top: 1.7rem;">REST Api Call Examples</h4>
+	<div class="mx-auto text-start" style="display: inline-block;">
+		1. <a href="@Url.Content("~/api/AudioDevices")">Get Audio Device List</a>.<br />
+		2. <a href="@Url.Content("~/api/AudioDevices")">Get Audio Device List</a>.<br />
+	</div>
 </div>

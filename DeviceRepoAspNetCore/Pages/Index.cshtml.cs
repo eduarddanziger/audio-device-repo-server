@@ -1,17 +1,20 @@
 using DeviceRepoAspNetCore.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Globalization;
 
 namespace DeviceRepoAspNetCore.Pages;
 
-public class IndexModel(ILogger<IndexModel> logger, VersionProvider versionProvider)
+public class IndexModel(VersionProvider versionProvider)
     : PageModel
 {
     public string Version => versionProvider.CodeVersion;
+    public string Timestamp => versionProvider.LastCommitDate;
+
+    public string CopyrightYear => DateTime.TryParse(Timestamp, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt) ? dt.Year.ToString() : "2024";
 
     public void OnGet()
     {
-        // Use Version or log it if desired
-        logger.LogInformation("Current version is {Version}", Version);
+        ViewData["CopyrightYear"] = CopyrightYear;
     }
 }
