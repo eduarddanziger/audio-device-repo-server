@@ -1,18 +1,16 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+	ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-	<h4 style="font-size: 1.3rem;">Audio Device Repository Server</h4>
-	<div class="mx-auto text-start" style="display: inline-block;">
-		Current Release Version @Model.Version<br />
-		Timestamp @Model.Timestamp
-	</div>
-	<h4 style="font-size: 1.3rem; margin-top: 1.7rem;">REST Api Call Examples</h4>
-	<div class="mx-auto text-start" style="display: inline-block;">
-		1. <a href="@Url.Content("~/api/AudioDevices")">Get Audio Device List</a>.<br />
-		2. <a href="@Url.Content("~/api/AudioDevices")">Get Audio Device List</a>.<br />
-	</div>
-</div>
+<h3>Audio Device Repository Server</h3>
+<p>
+	Version of the current release: @Model.Version<br/>
+	Timestamp: @Model.Timestamp
+</p>
+<p>
+	REST Api Output Examples:<br/>
+	1. <a href="@Url.Content("~/api/AudioDevices")">Get Audio Device List</a>.<br/>
+	2. <a href="@Url.Content("~/api/Info/Version")">Get Server Version</a>.
+</p>
