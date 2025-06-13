@@ -64,6 +64,7 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
 
         var update = Builders<AudioDeviceDocument>.Update
             .Set(d => d.Name, entireDeviceMessage.Name)
+            .Set(d => d.OperationSystemName, entireDeviceMessage.OperationSystemName)
             .Set(d => d.FlowType, entireDeviceMessage.FlowType)
             .Set(d => d.RenderVolume, entireDeviceMessage.RenderVolume)
             .Set(d => d.CaptureVolume, entireDeviceMessage.CaptureVolume)

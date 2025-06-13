@@ -13,6 +13,7 @@ public class AudioDeviceDocument
     public int CaptureVolume { get; set; }
     public DateTime UpdateDate { get; set; }
     public required string HostName { get; set; }
+    public required string OperationSystemName { get; set; }
     public DeviceMessageType DeviceMessageType { get; set; }
     public List<ChangeEvent> ChangeJournal { get; set; } = [];
 
@@ -27,7 +28,8 @@ public class AudioDeviceDocument
             CaptureVolume = CaptureVolume,
             UpdateDate = UpdateDate,
             HostName = HostName,
-            DeviceMessageType = DeviceMessageType
+            OperationSystemName = OperationSystemName,
+            DeviceMessageType = DeviceMessageType,
         };
     }
 }
