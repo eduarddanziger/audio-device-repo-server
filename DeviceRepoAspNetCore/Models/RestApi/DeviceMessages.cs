@@ -31,6 +31,9 @@ public record EntireDeviceMessage
     public required string Name { get; init; }
 
     [Required]
+    public required string OperationSystemName { get; init; }
+
+    [Required]
     public DeviceFlowType FlowType { get; init; }
 
     [Range(0, 1000)]
