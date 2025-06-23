@@ -7,7 +7,7 @@ For Audio Device REST API see [rest-api-documentation.md](DeviceRepoAspNetCore/r
 ## Latest rollout on GitHub Infrastructure
 
 - The ASP.NET Core server is started by a client request, if the client runs on the GitHub Infrastructure, too.
-- The GUI client (ReactJS SPA) resides in a repository [audio-device-repo-server](https://github.com/eduarddanziger/audio-device-repo-server/)
+- The GUI client (ReactJS SPA) resides in a repository [list-audio-react-app](https://github.com/eduarddanziger/list-audio-react-app/)
 
 ## Development environment
 
