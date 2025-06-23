@@ -135,12 +135,13 @@ public class MongoDbAudioDeviceStorage : IAudioDeviceStorage
     {
         var loweredQuery = query.ToLowerInvariant();
         return _devicesCollection.AsQueryable()
-            .Where(d =>
-#pragma warning disable CA1862
 // MongoDB’s LINQ provider does not support StringComparison.OrdinalIgnoreCase in .Contains() or similar string methods.
-                d.PnpId.ToLower().Contains(loweredQuery) ||
-                d.Name.ToLower().Contains(loweredQuery) ||
-                d.HostName.ToLower().Contains(loweredQuery))
+#pragma warning disable CA1862
+            .Where(d => d.PnpId.ToLower().Contains(loweredQuery)
+                        || d.Name.ToLower().Contains(loweredQuery)
+                        || d.HostName.ToLower().Contains(loweredQuery)
+                        || d.OperationSystemName.ToLower().Contains(loweredQuery)
+            )
 #pragma warning restore CA1862
             .ToList()
             .Select(d => d.ToDeviceMessage());
