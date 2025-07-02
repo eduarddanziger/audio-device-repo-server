@@ -32,26 +32,48 @@ namespace DeviceRepoAspNetCore.Controllers
         [HttpGet("{pnpId}/{hostName}")]
         public IActionResult GetByKey(string pnpId, string hostName)
         {
-            hostName = CryptService.ComputeChecksum(hostName);
-
-            var device = storage.GetAll().FirstOrDefault(
-                d => d.PnpId == pnpId && d.HostName == hostName
-                );
-            if (device == null)
+            foreach (var realHostNameOrCheckSummed in new []{ true, false })
             {
-                return NotFound();
-            }
+                var device = storage.GetAll().FirstOrDefault(
+                    d => d.PnpId == pnpId && d.HostName == hostName
+                );
+                if (device != null)
+                {
+                    return Ok(device);
+                }
 
-            return Ok(device);
+                if (!realHostNameOrCheckSummed)
+                {
+                    break;
+                }
+
+                hostName = CryptService.ComputeChecksum(hostName);
+            }
+            return NotFound();
         }
 
         [HttpDelete("{pnpId}/{hostName}")]
         public IActionResult Remove(string pnpId, string hostName)
         {
-            hostName = CryptService.ComputeChecksum(hostName);
+            foreach (var realHostNameOrCheckSummed in new[] { true, false })
+            {
+                if (storage.GetAll().FirstOrDefault(
+                        d => d.PnpId == pnpId && d.HostName == hostName
+                    ) != null)
+                {
+                    storage.Remove(pnpId, hostName);
+                    return NoContent();
+                }
 
-            storage.Remove(pnpId, hostName);
-            return NoContent();
+                if (!realHostNameOrCheckSummed)
+                {
+                    break;
+                }
+
+                hostName = CryptService.ComputeChecksum(hostName);
+            }
+
+            return NotFound();
         }
 
         [HttpPut("{pnpId}/{hostName}")]
