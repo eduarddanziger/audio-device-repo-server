@@ -30,6 +30,12 @@ jobs:
         with:
           dotnet-version: '8.0'
 
+      - name: Install LibMan CLI
+        run: dotnet tool install -g Microsoft.Web.LibraryManager.Cli
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
