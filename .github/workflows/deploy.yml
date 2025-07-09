@@ -113,29 +113,30 @@ jobs:
       #     curl -X POST "${HEADERS[@]}" "$START_URL"
       #     echo "...Codespace started: $CS_NAME."
 
-      - name: Copy Release Notes to artifacts 
-        run: |
-          # Create the artifacts directory if it doesn't exist
-          mkdir -p artifacts
-          # Set variables
-          VERSION=${{ steps.get_version.outputs.VERSION }}
-          DATE=$(TZ=Europe/Berlin date +"%d.%m.%Y %H:%M:%S%z")
+      #      - name: Copy Release Notes to artifacts 
+      #        run: |
+      #          # Create the artifacts directory if it doesn't exist
+      #          mkdir -p artifacts
+      #          # Set variables
+      #          VERSION=${{ steps.get_version.outputs.VERSION }}
+      #          DATE=$(TZ=Europe/Berlin date +"%d.%m.%Y %H:%M:%S%z")
+      #
+      #          perl -pe "s/\\\$date\\\$/$DATE/g; s/\\\$version\\\$/$VERSION/g" \
+      #              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md
+      #
+      #      - name: Upload entire artifacts directory
+      #        uses: actions/upload-artifact@v4
+      #        with:
+      #          name: Artifacts
+      #          path: artifacts
 
-          perl -pe "s/\\\$date\\\$/$DATE/g; s/\\\$version\\\$/$VERSION/g" \
-              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md
-
-      - name: Upload entire artifacts directory
-        uses: actions/upload-artifact@v4
-        with:
-          name: Artifacts
-          path: artifacts
-
-      - name: Create Release
-        run: |
-          VERS=${{ steps.get_version.outputs.VERSION }}
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh release create "$VERS" --title "AudioDeviceRepoServer $VERS" --notes "Release of Audio Device Repository Server $VERS"
-          gh release upload "$VERS" artifacts/*.*
+      #      - name: Create Release
+      #        run: |
+      #          VERS=${{ steps.get_version.outputs.VERSION }}
+      #          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+      #          gh release create "$VERS" --title "AudioDeviceRepoServer $VERS" --notes "Release of Audio Device Repository Server $VERS"
+      #          gh release upload "$VERS" artifacts/*.*
+      #
 
   deploy:
     runs-on: ubuntu-latest
