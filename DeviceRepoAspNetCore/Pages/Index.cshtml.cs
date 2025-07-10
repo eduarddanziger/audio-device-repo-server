@@ -10,6 +10,7 @@ public class IndexModel(VersionProvider versionProvider)
 {
     public string Version => versionProvider.CodeVersion;
     public string Timestamp => versionProvider.LastCommitDate;
+    public string Runtime => versionProvider.Runtime;
 
     public string CopyrightYear => DateTime.TryParse(Timestamp, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt) ? dt.Year.ToString() : "2024";
 
