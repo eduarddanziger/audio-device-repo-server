@@ -36,11 +36,10 @@ jobs:
       - name: Add .NET tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Build and publish
+        run: |
+            dotnet build --configuration Release
+            dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Deploy to Azure
         uses: azure/webapps-deploy@v2
@@ -114,27 +113,27 @@ jobs:
       #     curl -X POST "${HEADERS[@]}" "$START_URL"
       #     echo "...Codespace started: $CS_NAME."
 
-      #      - name: Copy Release Notes to artifacts 
-      #        run: |
-      #          # Create the artifacts directory if it doesn't exist
-      #          mkdir -p artifacts
-      #          # Set variables
-      #          VERSION=${{ steps.get_version.outputs.VERSION }}
-      #          DATE=$(TZ=Europe/Berlin date +"%d.%m.%Y %H:%M:%S%z")
-      #
-      #          perl -pe "s/\\\$date\\\$/$DATE/g; s/\\\$version\\\$/$VERSION/g" \
-      #              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md
-      #
-      #      - name: Upload entire artifacts directory
-      #        uses: actions/upload-artifact@v4
-      #        with:
-      #          name: Artifacts
-      #          path: artifacts
+      - name: Copy Release Notes to artifacts 
+        run: |
+          # Create the artifacts directory if it doesn't exist
+          mkdir -p artifacts
+          # Set variables
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          DATE=$(TZ=Europe/Berlin date +"%d.%m.%Y %H:%M:%S%z")
 
-      #      - name: Create Release
-      #        run: |
-      #          VERS=${{ steps.get_version.outputs.VERSION }}
-      #          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-      #          gh release create "$VERS" --title "AudioDeviceRepoServer $VERS" --notes "Release of Audio Device Repository Server $VERS"
-      #          gh release upload "$VERS" artifacts/*.*
-      #
+          perl -pe "s/\\\$date\\\$/$DATE/g; s/\\\$version\\\$/$VERSION/g" \
+              AudioDeviceRepoServer-Release-Notes.md > artifacts/AudioDeviceRepoServer-Release-Notes.md
+
+      - name: Upload entire artifacts directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: artifacts
+
+      - name: Create Release
+        run: |
+          VERS=${{ steps.get_version.outputs.VERSION }}
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh release create "$VERS" --title "AudioDeviceRepoServer $VERS" --notes "Release of Audio Device Repository Server $VERS"
+          gh release upload "$VERS" artifacts/*.*
+
