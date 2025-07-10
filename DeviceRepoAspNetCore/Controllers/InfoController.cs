@@ -13,7 +13,8 @@ namespace DeviceRepoAspNetCore.Controllers
             return Ok(new
             {
                 releaseVersion = versionProvider.CodeVersion,
-                lastCommitDate = versionProvider.LastCommitDate
+                lastCommitDate = versionProvider.LastCommitDate,
+                runtime = versionProvider.Runtime
             });
         }
     }
