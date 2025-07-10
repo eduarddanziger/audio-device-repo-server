@@ -36,18 +36,6 @@ jobs:
       - name: Add .NET tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - name: Build and publish
-        run: |
-            dotnet build --configuration Release
-            dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-
-      - name: Deploy to Azure
-        uses: azure/webapps-deploy@v2
-        with:
-            app-name: 'sdrepo'
-            publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-            package: ${{env.DOTNET_ROOT}}/myapp
-
       - name: Get version from Git tags
         id: get_version
         run: |
@@ -136,4 +124,16 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh release create "$VERS" --title "AudioDeviceRepoServer $VERS" --notes "Release of Audio Device Repository Server $VERS"
           gh release upload "$VERS" artifacts/*.*
+
+      - name: Build and publish
+        run: |
+            dotnet build --configuration Release
+            dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+            app-name: 'sdrepo'
+            publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+            package: ${{env.DOTNET_ROOT}}/myapp
 
