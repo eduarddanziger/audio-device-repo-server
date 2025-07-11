@@ -7,8 +7,14 @@
         <EnableNETAnalyzers>True</EnableNETAnalyzers>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(CODESPACES)' == 'true' ">
+    <PropertyGroup Condition=" '$(CODESPACES)' == 'true' or '$(GITHUB_ACTIONS)' == 'true' or '$(WEBSITE_SITE_NAME)' != '' ">
+<!--
+"...format=%%cI...", see Ed.Common.targets, works only under Windows locally.
+Correct it to %cI on GitHub Codespaces / Actions and Azure DevOps pipelines.
+See output below in target RestoreClientSideLibraries.
+-->
         <LatestCommitTimestampScript><![CDATA[git log -1 --format=%cI]]></LatestCommitTimestampScript>
+
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -31,6 +37,8 @@
 
     <Target Name="RestoreClientSideLibraries" BeforeTargets="Build">
         <Exec Command="libman restore" />
+        <message Importance="high" text="Environment: CODESPACES=>'$(CODESPACES)', GITHUB_ACTIONS=>'$(GITHUB_ACTIONS)', WEBSITE_SITE_NAME=>'$(WEBSITE_SITE_NAME)', RUNNER_OS=>'$(RUNNER_OS)'." />
+
     </Target>
 
 </Project>
