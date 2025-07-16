@@ -11,6 +11,15 @@ Released on $date$
 ~~~
 
 ## Changes
+- Deployment to Azure App Service
+
+1.2.6
+--------
+~~~
+Released on 15.06.2025 14:19:50+0200
+~~~
+
+## Changes
 - Operation system name included into the Rest API
 
 1.2.4
