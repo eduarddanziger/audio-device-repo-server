@@ -1,15 +1,14 @@
-# Audio Device Repository Server / ASP.NET Core with REST API
+# Audio Device Repository Server (ASP.NET Core with REST API)
 
 - The backend of Audio Device Repository Server as a ASP.Net Core Server with REST API (C# / MongoDB).
 
-- The GUI client (React SPA) can be started here: [Audio Device Repository Client](https://eduarddanziger.github.io/list-audio-react-app/)
+- The GUI client (Next.js / React / TypeScript) deployed on Vercel: [https://list-audio-react-app.vercel.app](https://list-audio-react-app.vercel.app)
 
-- For Audio Device REST API desctiption see [rest-api-documentation.md](DeviceRepoAspNetCore/rest-api-documentation.md).
+- For Audio Device REST API description see [rest-api-documentation.md](DeviceRepoAspNetCore/rest-api-documentation.md).
 
-## Latest rollouts on GitHub Codespace and Azure App Service
+- Client Apps start the Audio Device Repository Server on-demand, if it doesn't run already.
 
-- The ASP.NET Core Server starts automatically on-demand, if it doesn't run already.
-- The GUI client resides in a repository [list-audio-react-app](https://github.com/eduarddanziger/list-audio-react-app/)
+- The main GUI client's repository is [list-audio-react-app](https://github.com/eduarddanziger/list-audio-react-app/)
 
 ## Development environment
 
